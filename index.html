@@ -38,7 +38,7 @@ canvas{display:none}
 /* ===== PENGATURAN ===== */
 const CFG={
   template:"template.png",       // taruh gambar format sertifikat Anda di folder yang sama (A4 landscape). Jika tidak ada, desain bawaan dipakai.
-  namaY:580, jurusanY:660,        // posisi teks (px, kanvas 1754x1240) bila memakai template sendiri
+  cx:991, namaY:672, jurusanY:722, // posisi teks pada template (px, ukuran acuan 2000x1414). Naikkan/turunkan angka Y bila perlu
   judul:"Capstone Project 2026/2027 \u201CMega Aksi Video Promosi Viral untuk 46 UMKM Lokal Bukittinggi\u201D",
   tgl:"Bukittinggi, Desember 2026",
   ketua:"Nama Ketua Prodi",
@@ -47,7 +47,7 @@ const CFG={
 };
 /* ====================== */
 const $=id=>document.getElementById(id);
-const cv=$("cv"),ctx=cv.getContext("2d"),W=1754,H=1240;
+const cv=$("cv"),ctx=cv.getContext("2d");let W=1754,H=1240;
 if(CFG.kodeAkses){$("kode").style.display=$("kodeLbl").style.display="block"}
 
 function wrap(t,x,y,maxW,lh){
@@ -66,14 +66,18 @@ function loadTpl(){
 }
 async function draw(nama,jurusan){
   const tpl=await loadTpl();
+  if(tpl){cv.width=W=tpl.naturalWidth;cv.height=H=tpl.naturalHeight}else{cv.width=W=1754;cv.height=H=1240}
   ctx.clearRect(0,0,W,H);ctx.fillStyle="#fff";ctx.fillRect(0,0,W,H);
   ctx.textAlign="center";ctx.fillStyle="#0f172a";
   if(tpl){
     ctx.drawImage(tpl,0,0,W,H);
-    let fs=84;ctx.font=`bold ${fs}px Georgia,serif`;
-    while(ctx.measureText(nama).width>1300&&fs>40){fs-=4;ctx.font=`bold ${fs}px Georgia,serif`}
-    ctx.fillText(nama,W/2,CFG.namaY);
-    ctx.font="34px Georgia,serif";ctx.fillText("Program Studi "+jurusan,W/2,CFG.jurusanY);
+    const s=W/2000,cx=CFG.cx*s,fam='"Times New Roman",Times,serif';
+    ctx.fillStyle="#002f87";
+    let fs=72*s;ctx.font=`bold ${fs}px ${fam}`;
+    while(ctx.measureText(nama).width>900*s&&fs>30*s){fs-=2*s;ctx.font=`bold ${fs}px ${fam}`}
+    ctx.fillText(nama,cx,CFG.namaY*s);
+    ctx.font=`${26*s}px ${fam}`;
+    ctx.fillText("Program Studi "+jurusan,cx,CFG.jurusanY*s);
     return;
   }
   ctx.strokeStyle="#059669";ctx.lineWidth=18;ctx.strokeRect(40,40,W-80,H-80);
